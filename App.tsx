@@ -9,6 +9,9 @@ import Account from './components/Account';
 import PricingModal from './components/PricingModal';
 import Auth from './components/Auth';
 import { db_getUser, db_saveUser } from './services/db';
+import { createMpCheckout } from "./services/payments";
+import { CREDIT_PACKAGES } from "./constants";
+
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('studio');
@@ -38,9 +41,9 @@ const App: React.FC = () => {
     localStorage.setItem('currentUserEmail', user.email);
     
     if (isNewUser) {
-      setCredits(INITIAL_FREE_CREDITS);
+      setits(INITIAL_FREE_ITS);
       setIsSubscribed(false);
-      db_saveUser(user.email, { credits: INITIAL_FREE_CREDITS, isSubscribed: false });
+      db_saveUser(user.email, { its: INITIAL_FREE_ITS, isSubscribed: false });
     } else {
       const userData = db_getUser(user.email);
       setCredits(userData?.credits ?? 0);
@@ -72,26 +75,29 @@ const App: React.FC = () => {
     }
   };
 
-  const addCredits = (amount: number) => {
-    updateUserCredits(credits + amount);
-    setIsPricingModalOpen(false);
-    if(pendingAction.action && (credits + amount) >= pendingAction.cost) {
-      updateUserCredits(credits + amount - pendingAction.cost);
-      pendingAction.action();
-      setPendingAction({ cost: 0, action: null });
-    }
-  };
-  
-  const startSubscription = () => {
-    if(isSubscribed) return;
-    updateUserSubscription(true, SUBSCRIPTION_PACKAGE.credits);
-    setIsPricingModalOpen(false);
-     if(pendingAction.action && (credits + SUBSCRIPTION_PACKAGE.credits) >= pendingAction.cost) {
-        updateUserCredits(credits + SUBSCRIPTION_PACKAGE.credits - pendingAction.cost);
-        pendingAction.action();
-        setPendingAction({ cost: 0, action: null });
-    }
-  };
+// 🔹 Função para comprar créditos
+async function purchaseCredits(pkg) {
+  const user = await db_getUser();
+  const amount = parseFloat(pkg.price.replace("R$", "").replace(",", "."));
+  const data = await createMpCheckout(user.email, pkg.name, amount);
+  if (data?.ok && data?.url) {
+    window.location.href = data.url; // redireciona pro Mercado Pago
+  } else {
+    alert("Erro ao criar pagamento, tente novamente.");
+  }
+}
+
+// 🔹 Função para assinar plano mensal
+async function purchaseSubscription() {
+  const user = await db_getUser();
+  const amount = 29.9; // valor do plano PRO
+  const data = await createMpCheckout(user.email, "Plano PRO Mensal", amount);
+  if (data?.ok && data?.url) {
+    window.location.href = data.url;
+  } else {
+    alert("Erro ao iniciar assinatura.");
+  }
+}
 
   const requestAction = useCallback((cost: number, action: () => Promise<void>) => {
     if (credits >= cost) {
