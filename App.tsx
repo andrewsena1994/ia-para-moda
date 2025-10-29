@@ -11,6 +11,8 @@ import Auth from './components/Auth';
 import { db_getUser, db_saveUser } from './services/db';
 import { createMpCheckout } from "./services/payments";
 import { CREDIT_PACKAGES } from "./constants";
+import { createMpCheckout } from './services/payments';
+import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGE } from './constants';
 
 
 const App: React.FC = () => {
@@ -75,29 +77,25 @@ const App: React.FC = () => {
     }
   };
 
-// 🔹 Função para comprar créditos
-async function purchaseCredits(pkg) {
-  const user = await db_getUser();
-  const amount = parseFloat(pkg.price.replace("R$", "").replace(",", "."));
-  const data = await createMpCheckout(user.email, pkg.name, amount);
-  if (data?.ok && data?.url) {
-    window.location.href = data.url; // redireciona pro Mercado Pago
-  } else {
-    alert("Erro ao criar pagamento, tente novamente.");
-  }
+// converte "19,90" para 19.90
+const toNumber = (v: string) => parseFloat(v.replace('.', '').replace(',', '.'));
+
+async function purchaseCredits(amountCredits: number) {
+  if (!currentUser) return;
+  const pkg = CREDIT_PACKAGES.find(p => p.credits === amountCredits);
+  if (!pkg) return;
+  const price = toNumber(pkg.price);
+  const url = await createMpCheckout(currentUser.email, `${pkg.credits} créditos`, price);
+  if (url) window.location.href = url;
 }
 
-// 🔹 Função para assinar plano mensal
 async function purchaseSubscription() {
-  const user = await db_getUser();
-  const amount = 29.9; // valor do plano PRO
-  const data = await createMpCheckout(user.email, "Plano PRO Mensal", amount);
-  if (data?.ok && data?.url) {
-    window.location.href = data.url;
-  } else {
-    alert("Erro ao iniciar assinatura.");
-  }
+  if (!currentUser || isSubscribed) return;
+  const price = toNumber(SUBSCRIPTION_PACKAGE.price);
+  const url = await createMpCheckout(currentUser.email, 'Plano mensal', price);
+  if (url) window.location.href = url;
 }
+
 
   const requestAction = useCallback((cost: number, action: () => Promise<void>) => {
     if (credits >= cost) {
