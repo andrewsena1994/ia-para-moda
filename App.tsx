@@ -122,7 +122,12 @@ async function purchaseSubscription() {
       case 'planner':
         return <SocialPlanner requestAction={requestAction} />;
       case 'account':
-        return <Account credits={credits} onAddCredits={addCredits} onSubscribe={startSubscription} isSubscribed={isSubscribed} />;
+        return <Account
+  credits={credits}
+  onAddCredits={purchaseCredits}
+  onSubscribe={purchaseSubscription}
+  isSubscribed={isSubscribed}
+/>
       default:
         return <MagicStudio requestAction={requestAction} />;
     }
@@ -151,3 +156,4 @@ async function purchaseSubscription() {
 };
 
 export default App;
+Integração do checkout Mercado Pago no App.tsx
