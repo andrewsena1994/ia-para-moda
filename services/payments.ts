@@ -1,3 +1,8 @@
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Methods: POST, OPTIONS
+
+
 // services/payments.ts
 export async function createMpCheckout(
   userId: string,
@@ -24,3 +29,20 @@ export async function createMpCheckout(
     return null;
   }
 }
+// middleware CORS
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
+
+// endpoint
+app.post('/payments/mp/checkout', async (req, res) => {
+  const { userid, title, amount } = req.body; // amount em número
+  // gere preferência do Mercado Pago aqui...
+  // ex.: const preference = await mp.preferences.create({...});
+  // res.json({ url: preference.init_point });
+  res.json({ url: 'https://www.mercadopago.com.br/checkout/v1/...'}); // <- precisa devolver {url}
+});
