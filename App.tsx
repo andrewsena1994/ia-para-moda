@@ -10,9 +10,11 @@ import PricingModal from './components/PricingModal';
 import Auth from './components/Auth';
 import { db_getUser, db_saveUser } from './services/db';
 import { createMpCheckout } from "./services/payments";
-import { CREDIT_PACKAGES } from "./constants";
 import { createMpCheckout } from './services/payments';
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGE } from './constants';
+import { createMpCheckout } from './services/payments';
+import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGE, INITIAL_FREE_CREDITS } from './constants';
+
 
 
 const App: React.FC = () => {
@@ -77,7 +79,7 @@ const App: React.FC = () => {
     }
   };
 
-// converte "19,90" para 19.90
+// converte "29,90" para 29.90
 const toNumber = (v: string) => parseFloat(v.replace('.', '').replace(',', '.'));
 
 async function purchaseCredits(amountCredits: number) {
@@ -99,7 +101,6 @@ async function purchaseSubscription() {
 
   const requestAction = useCallback((cost: number, action: () => Promise<void>) => {
     if (credits >= cost) {
-      updateUserCredits(credits - cost);
       action();
     } else {
       setPendingAction({cost: cost, action: action});
@@ -121,7 +122,7 @@ async function purchaseSubscription() {
         return <SocialPlanner requestAction={requestAction} />;
       case 'account':
         return <Account
-  credits={credits}
+  credits={purchasecredits}
   onAddCredits={purchaseCredits}
   onSubscribe={purchaseSubscription}
   isSubscribed={isSubscribed}
@@ -143,12 +144,13 @@ async function purchaseSubscription() {
       <main className="flex-grow container mx-auto px-4 py-8">
         {renderContent()}
       </main>
-      <PricingModal
-        isOpen={isPricingModalOpen}
-        onClose={() => setIsPricingModalOpen(false)}
-        onAddCredits={addCredits}
-        onSubscribe={startSubscription}
-      />
+   <PricingModal
+  isOpen={isPricingModalOpen}
+  onClose={() => setIsPricingModalOpen(false)}
+  onAddCredits={purchaseCredits}
+  onSubscribe={purchaseSubscription}
+/>
+
     </div>
   );
 };
