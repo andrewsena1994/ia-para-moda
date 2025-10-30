@@ -8,6 +8,55 @@ interface AccountProps {
   onSubscribe: () => void;
   isSubscribed: boolean;
 }
+type Props = {
+  credits: number;
+  isSubscribed: boolean;
+  onAddCredits: (amountCredits: number) => void;
+  onSubscribe: () => void;
+};
+
+export default function Account({
+  credits,
+  isSubscribed,
+  onAddCredits,
+  onSubscribe,
+}: Props) {
+  return (
+    <div className="space-y-4">
+      {/* saldo / mensagem de assinatura como já está */}
+
+      <section className="rounded-xl bg-white p-4 shadow">
+        {/* Plano mensal */}
+        <button
+          type="button"
+          onClick={() => onSubscribe()}
+          className="w-full rounded-lg px-4 py-3 font-semibold"
+        >
+          40 Créditos / Mês — R$ 39,90
+        </button>
+
+        <div className="my-4 text-center text-sm opacity-60">ou compra única</div>
+
+        {/* Pacotes avulsos */}
+        <button
+          type="button"
+          onClick={() => onAddCredits(10)}
+          className="mb-3 w-full rounded-lg px-4 py-3 font-semibold"
+        >
+          10 Créditos — R$ 19,90
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onAddCredits(20)}
+          className="w-full rounded-lg px-4 py-3 font-semibold"
+        >
+          20 Créditos — R$ 29,90
+        </button>
+      </section>
+    </div>
+  );
+}
 
 const Account: React.FC<AccountProps> = ({ credits, onAddCredits, onSubscribe, isSubscribed }) => {
   return (
