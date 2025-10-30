@@ -4,15 +4,21 @@ const toNumber = (v: string | number) =>
     ? v
     : Number(String(v).replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, ''));
 
-// Comprar CRÉDITOS por pacote (ex.: 'starter', 'pro', etc.)
-async function purchaseCredits(packId: keyof typeof CREDIT_PACKAGES) {
-  try {
-    if (!user) {
-      // se você tiver modal de login, abra aqui
-      // setShowAuth(true);
-      // toast?.('Faça login para continuar');
-      return;
-    }
+    // Número de créditos gratuitos ao criar uma conta
+export const INITIAL_FREE_CREDITS = 5;
+
+// Pacotes de créditos avulsos (quantidade e preço)
+export const CREDIT_PACKAGES = [
+  { credits: 10, price: 'R$ 19,90' },
+  { credits: 20, price: 'R$ 29,90' },
+];
+
+// Pacote da assinatura mensal (40 créditos renovados por mês)
+export const SUBSCRIPTION_PACKAGE = {
+  credits: 40,
+  price: 'R$ 39,90',
+  interval: 'mês',
+};
 
     const pack = CREDIT_PACKAGES[packId];
     const amount = toNumber(pack.priceBRL); // preço em R$
@@ -26,31 +32,9 @@ async function purchaseCredits(packId: keyof typeof CREDIT_PACKAGES) {
       // toast?.('Não foi possível iniciar o pagamento');
       alert('Não foi possível iniciar o pagamento.');
     }
-  } catch (e) {
+    catch (e) {
     console.error(e);
     alert('Erro ao iniciar pagamento.');
   }
 }
 
-// Assinatura MENSAL (ex.: Plano PRO a R$ 29,90)
-async function purchaseSubscription() {
-  try {
-    if (!user) {
-      // setShowAuth(true);
-      return;
-    }
-    const amount = toNumber('29,90'); // ajuste se você tiver isso em constants.ts
-    const title = 'Plano PRO Mensal';
-
-    const r = await createMpCheckout(user.email, title, amount);
-    if (r?.ok && r?.url) {
-      window.location.href = r.url;
-    } else {
-      console.error('Falha ao criar checkout:', r);
-      alert('Não foi possível iniciar o pagamento.');
-    }
-  } catch (e) {
-    console.error(e);
-    alert('Erro ao iniciar pagamento.');
-  }
-}
