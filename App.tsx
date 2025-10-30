@@ -9,8 +9,9 @@ async function purchaseCredits(amountCredits: number) {
   const pkg = CREDIT_PACKAGES.find(p => p.credits === amountCredits);
   if (!pkg) return;
   const price = toNumber(pkg.price);
-  const url = await createMpCheckout(currentUser.email, `${pkg.credits} créditos`, price);
-  if (url) window.location.href = url;
+  const url = await createCheckout(currentuser.email, `${pkg.credits} créditos`, price);
+console.log('URL recebida do backend:', url);
+if (url) window.location.href = url;
 }
 
 async function purchaseSubscription() {
