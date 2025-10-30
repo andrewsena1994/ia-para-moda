@@ -10,6 +10,27 @@ interface PricingModalProps {
   onSubscribe: () => void;
 }
 
+// components/PricingModal.tsx (trecho principal)
+type Props = {
+  isOpen: boolean;
+  onClose: () => void;
+  onAddCredits: (amountCredits: number) => void;
+  onSubscribe: () => void;
+};
+
+export default function PricingModal({ isOpen, onClose, onAddCredits, onSubscribe }: Props) {
+  if (!isOpen) return null;
+
+  return (
+    <div /* seu overlay e conteúdo */>
+      <button onClick={() => onSubscribe()}>40 Créditos / Mês — R$ 39,90</button>
+      <button onClick={() => onAddCredits(10)}>10 Créditos — R$ 19,90</button>
+      <button onClick={() => onAddCredits(20)}>20 Créditos — R$ 29,90</button>
+    </div>
+  );
+}
+
+
 const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, onAddCredits, onSubscribe }) => {
   if (!isOpen) return null;
 
