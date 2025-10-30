@@ -63,21 +63,6 @@ const App: React.FC = () => {
     setActiveTab('studio');
   };
 
-  const updateUserCredits = (newCreditAmount: number) => {
-    setCredits(newCreditAmount);
-    if(currentUser) {
-        db_saveUser(currentUser.email, { credits: newCreditAmount, isSubscribed });
-    }
-  };
-
-  const updateUserSubscription = (newIsSubscribed: boolean, creditsToAdd: number) => {
-    setIsSubscribed(newIsSubscribed);
-    const newCreditAmount = credits + creditsToAdd;
-    setCredits(newCreditAmount);
-     if(currentUser) {
-        db_saveUser(currentUser.email, { credits: newCreditAmount, isSubscribed: newIsSubscribed });
-    }
-  };
 
 // converte "29,90" para 29.90
 const toNumber = (v: string) => parseFloat(v.replace('.', '').replace(',', '.'));
