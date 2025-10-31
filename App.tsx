@@ -20,6 +20,7 @@ import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGE, INITIAL_FREE_CREDITS } from './c
 
 // Assinatura de créditos avulsos
 async function purchaseCredits(amountCredits: number) {
+  console.log('[purchaseCredits] clicou:', amountCredits);
   if (!currentUser) return;
   const pkg = CREDIT_PACKAGES.find(p => p.credits === amountCredits);
   if (!pkg) return;
@@ -33,10 +34,9 @@ async function purchaseCredits(amountCredits: number) {
   }
 }
 
-
-
 // Assinatura mensal (já está correto)
 async function purchaseSubscription() {
+  console.log('[purchaseSubscription] clicou');
   if (!currentUser || isSubscribed) return;
   const price = toNumber(SUBSCRIPTION_PACKAGE.price);
   const url = await createMpCheckout(currentUser.email, 'Plano mensal', price);
