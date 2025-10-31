@@ -10,53 +10,60 @@ interface AccountProps {
 }
 type Props = {
   credits: number;
-  isSubscribed: boolean;
-  onAddCredits: (amountCredits: number) => void;
-  onSubscribe: () => void;
+  onAddCredits?: (amount: number) => void;
+  onSubscribe?: () => void;
+  isSubscribed?: boolean;
 };
 
 export default function Account({
   credits,
-  isSubscribed,
   onAddCredits,
   onSubscribe,
+  isSubscribed
 }: Props) {
   return (
-    <div className="space-y-4">
-      {/* saldo / mensagem de assinatura como já está */}
+    <div>
+      {/* Plano mensal */}
+      <button
+        type="button"
+        onClick={() => onSubscribe?.()}
+        className="w-full rounded-lg py-4 px-5 bg-pink-100 hover:bg-pink-200"
+      >
+        <div className="flex items-center justify-between">
+          <span className="text-sm uppercase tracking-wide">Plano Mensal</span>
+          <span className="font-semibold">R$ 39,90</span>
+        </div>
+      </button>
 
-      <section className="rounded-xl bg-white p-4 shadow">
-        {/* Plano mensal */}
-        <button
-          type="button"
-          onClick={() => onSubscribe()}
-          className="w-full rounded-lg px-4 py-3 font-semibold"
-        >
-          40 Créditos / Mês — R$ 39,90
-        </button>
+      <div className="my-4 text-center text-xs text-gray-400">ou compra única</div>
 
-        <div className="my-4 text-center text-sm opacity-60">ou compra única</div>
+      {/* 10 créditos */}
+      <button
+        type="button"
+        onClick={() => onAddCredits?.(10)}
+        className="w-full rounded-lg py-4 px-5 bg-pink-100 hover:bg-pink-200"
+      >
+        <div className="flex items-center justify-between">
+          <span>10 Créditos</span>
+          <span className="font-semibold">R$ 19,90</span>
+        </div>
+      </button>
 
-        {/* Pacotes avulsos */}
-        <button
-          type="button"
-          onClick={() => onAddCredits(10)}
-          className="mb-3 w-full rounded-lg px-4 py-3 font-semibold"
-        >
-          10 Créditos — R$ 19,90
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onAddCredits(20)}
-          className="w-full rounded-lg px-4 py-3 font-semibold"
-        >
-          20 Créditos — R$ 29,90
-        </button>
-      </section>
+      {/* 20 créditos */}
+      <button
+        type="button"
+        onClick={() => onAddCredits?.(20)}
+        className="mt-3 w-full rounded-lg py-4 px-5 bg-pink-100 hover:bg-pink-200"
+      >
+        <div className="flex items-center justify-between">
+          <span>20 Créditos</span>
+          <span className="font-semibold">R$ 29,90</span>
+        </div>
+      </button>
     </div>
   );
 }
+
 
 const Account: React.FC<AccountProps> = ({ credits, onAddCredits, onSubscribe, isSubscribed }) => {
   return (
