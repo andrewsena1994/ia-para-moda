@@ -1,8 +1,22 @@
 import { createMpCheckout } from './services/payments';
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGE, INITIAL_FREE_CREDITS } from './constants';
 
-// "29,90" -> 29.90
-const toNumber = (v: string) => parseFloat(v.replace('.', '').replace(',', '.'));
+*** Begin Patch
+*** Update File: App.tsx
+@@
+-// "29,90" -> 29.90
+-const toNumber = (v: string) => parseFloat(v.replace('.', '').replace(',', '.'));
++// Converts price strings like "R$ 19,90" or "19,90" to numeric values.
++// Remove currency symbols and thousands separators, then replace decimal comma with a dot.
++const toNumber = (v: string) => {
++  // Remove anything that is not a digit, comma, dot or minus sign
++  let cleaned = v.replace(/[^0-9,.-]/g, '');
++  // Remove thousand separators (dots) and convert comma decimal separator to dot
++  cleaned = cleaned.replace(/\./g, '').replace(',', '.');
++  const num = parseFloat(cleaned);
++  return isNaN(num) ? 0 : num;
++};
+*** End Patch
 
 // Assinatura de créditos avulsos
 async function purchaseCredits(amountCredits: number) {
@@ -18,6 +32,8 @@ async function purchaseCredits(amountCredits: number) {
     window.location.href = url;
   }
 }
+
+
 
 // Assinatura mensal (já está correto)
 async function purchaseSubscription() {
