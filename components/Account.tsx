@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { CREDIT_PACKAGES, SUBSCRIPTION_PACKAGE } from '../constants';
 
@@ -7,65 +6,29 @@ interface AccountProps {
   onAddCredits: (amount: number) => void;
   onSubscribe: () => void;
   isSubscribed: boolean;
-}
-type Props = {
-  credits: number;
-  onAddCredits?: (amount: number) => void;
-  onSubscribe?: () => void;
-  isSubscribed?: boolean;
-};
-
-export default function Account({
-  credits,
-  onAddCredits,
-  onSubscribe,
-  isSubscribed
-}: Props) {
-  return (
-    <div>
-      {/* Plano mensal */}
-      <button
-        type="button"
-        onClick={() => onSubscribe?.()}
-        className="w-full rounded-lg py-4 px-5 bg-pink-100 hover:bg-pink-200"
-      >
-        <div className="flex items-center justify-between">
-          <span className="text-sm uppercase tracking-wide">Plano Mensal</span>
-          <span className="font-semibold">R$ 39,90</span>
-        </div>
-      </button>
-
-      <div className="my-4 text-center text-xs text-gray-400">ou compra única</div>
-
-      {/* 10 créditos */}
-      <button
-        type="button"
-        onClick={() => onAddCredits?.(10)}
-        className="w-full rounded-lg py-4 px-5 bg-pink-100 hover:bg-pink-200"
-      >
-        <div className="flex items-center justify-between">
-          <span>10 Créditos</span>
-          <span className="font-semibold">R$ 19,90</span>
-        </div>
-      </button>
-
-      {/* 20 créditos */}
-      <button
-        type="button"
-        onClick={() => onAddCredits?.(20)}
-        className="mt-3 w-full rounded-lg py-4 px-5 bg-pink-100 hover:bg-pink-200"
-      >
-        <div className="flex items-center justify-between">
-          <span>20 Créditos</span>
-          <span className="font-semibold">R$ 29,90</span>
-        </div>
-      </button>
-    </div>
-  );
+  isProcessingPayment: boolean;
+  paymentState: 'idle' | 'generating' | 'confirming';
+  checkoutUrl: string | null;
+  onConfirmPayment: () => void;
+  onCancelPaymentProcess: () => void;
 }
 
+const Account: React.FC<AccountProps> = ({ 
+  credits, 
+  onAddCredits, 
+  onSubscribe, 
+  isSubscribed, 
+  isProcessingPayment,
+  paymentState,
+  checkoutUrl,
+  onConfirmPayment,
+  onCancelPaymentProcess
+}) => {
 
-const Account: React.FC<AccountProps> = ({ credits, onAddCredits, onSubscribe, isSubscribed }) => {
+  const processingMessage = paymentState === 'generating' 
+    ? 'Gerando link de pagamento...' 
+    : 'Confirmando pagamento, aguarde...';
+
   return (
     <div className="max-w-2xl mx-auto p-4 md:p-8 space-y-8">
       <div className="text-center p-8 bg-white rounded-2xl shadow-lg border border-pink-100">
@@ -85,7 +48,44 @@ const Account: React.FC<AccountProps> = ({ credits, onAddCredits, onSubscribe, i
         </div>
       )}
 
-      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200">
+      <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-200 relative">
+        {(isProcessingPayment || checkoutUrl) && (
+          <div className="absolute inset-0 bg-white/95 backdrop-blur-sm flex flex-col justify-center items-center z-10 rounded-2xl p-4 text-center">
+            {checkoutUrl ? (
+              <>
+                <h3 className="text-xl font-bold text-gray-800">Finalize seu Pagamento</h3>
+                <p className="text-gray-600 mt-2 mb-4">
+                  Use o link seguro do Mercado Pago e depois confirme o pagamento.
+                </p>
+                <a 
+                  href={checkoutUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="w-full max-w-xs bg-blue-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-blue-600 transition-transform transform hover:scale-105 duration-200 shadow-lg"
+                >
+                  <span>Pagar Agora</span>
+                </a>
+                <button 
+                  onClick={onConfirmPayment} 
+                  className="w-full max-w-xs mt-3 bg-green-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center space-x-2 hover:bg-green-600 transition-transform transform hover:scale-105 duration-200 shadow-lg"
+                >
+                  <span>Já Paguei, Confirmar</span>
+                </button>
+                <button onClick={onCancelPaymentProcess} className="text-sm text-gray-500 mt-4 hover:text-gray-800 transition-colors">
+                  Cancelar
+                </button>
+              </>
+            ) : (
+              <>
+                <svg className="animate-spin h-8 w-8 text-pink-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p className="mt-4 text-gray-700 font-semibold">{processingMessage}</p>
+              </>
+            )}
+          </div>
+        )}
         <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">Adicionar mais créditos</h2>
         <div className="space-y-4">
 
