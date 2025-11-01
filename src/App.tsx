@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import type { ActiveTab, User } from './types';
 import { INITIAL_FREE_CREDITS, SUBSCRIPTION_PACKAGE } from './constants';
@@ -105,12 +104,11 @@ const App: React.FC = () => {
     // Você cria este plano no painel de desenvolvedor do Mercado Pago.
     // O erro na sua imagem (SUB04-WOODPRVPTXML) provavelmente é por um ID de plano inválido.
     // =====================================================================================
-    const MERCADO_PAGO_PLAN_ID = 'c308754824654cf3a8d30bd6e7856aa1';
+    const MERCADO_PAGO_PLAN_ID = '1361129000437770';
     
     try {
       // Esta é a chamada para o seu backend para criar a assinatura.
       // A função createSubscription está em /services/paymentService.ts
-      // FIX: Pass the plan ID as a string, not a number.
       const { checkoutUrl } = await createSubscription(MERCADO_PAGO_PLAN_ID);
 
       const creditsToAdd = SUBSCRIPTION_PACKAGE.credits;
@@ -184,7 +182,7 @@ const App: React.FC = () => {
       setPendingAction({cost: cost, action: action});
       setIsPricingModalOpen(true);
     }
-  }, [credits, currentUser, updateUserCredits]);
+  }, [credits, updateUserCredits]);
 
   if (!currentUser) {
     return <Auth onAuthSuccess={handleAuthSuccess} />;
